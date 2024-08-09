@@ -1,0 +1,64 @@
+pip install uhfReaderApi
+pip install mysql-connector-python
+//安裝from web
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple uhfReaderApi
+
+
+
+CREATE USER 'yunningai'@'localhost' IDENTIFIED BY '90430522';
+GRANT ALL PRIVILEGES ON *.* TO 'yunningai'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+plates = [info[0] for info in plate_info.values()]
+
+CREATE TABLE plate_sensor_mappings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    plate VARCHAR(255) NOT NULL,
+    code_number VARCHAR(255) NOT NULL,
+    plate_time DATETIME NOT NULL,
+    sensor_time DATETIME NOT NULL,
+    created_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE unique_plate_code_bindings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    plate VARCHAR(255) NOT NULL,
+    code_number VARCHAR(255) NOT NULL,
+    binding_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER //
+
+CREATE PROCEDURE update_plate_sensor_mappings()
+BEGIN
+    -- 插入新的配對記錄
+    INSERT INTO plate_sensor_mappings (plate, code_number, plate_time, sensor_time)
+    SELECT lr.plate, s.code_number, lr.created_time, s.created_time
+    FROM license_records lr
+    JOIN sensors s
+    ON ABS(TIMESTAMPDIFF(SECOND, lr.created_time, s.created_time)) <= 5;
+
+    -- 刪除重複的配對記錄，僅保留最後一次出現的
+    DELETE p1 FROM plate_sensor_mappings p1
+    INNER JOIN plate_sensor_mappings p2
+    WHERE p1.plate = p2.plate AND p1.id < p2.id;
+    
+    -- 將唯一配對的車牌和傳感器代碼插入到 unique_plate_code_bindings 表
+    INSERT INTO unique_plate_code_bindings (plate, code_number)
+    SELECT plate, code_number
+    FROM plate_sensor_mappings
+    GROUP BY plate
+    HAVING COUNT(*) = 1
+    ON DUPLICATE KEY UPDATE binding_time = CURRENT_TIMESTAMP;
+END //
+
+DELIMITER ;
+
+SET GLOBAL event_scheduler = ON;
+
+CREATE EVENT auto_update_plate_sensor_mappings
+ON SCHEDULE EVERY 1 MINUTE
+DO
+CALL update_plate_sensor_mappings();
+
