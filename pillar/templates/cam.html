@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Streaming and Recognition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>辨識鏡頭畫面測試</h1>
+
+    <video id="videoElement" autoplay></video>
+
+    <div id="recognitionResult"></div>
+
+    <script>
+        var socket = io.connect('localhost:8080/streaming');
+
+        socket.on('connect', function() {
+            console.log('Connected to Flask server');
+        });
+
+        socket.on('streamInference', function(data) {
+            console.log('Received video stream URL:', data.rtsp_url);
+            var videoElement = document.getElementById('videoElement');
+            videoElement.src = data.rtsp_url;
+        });
+
+        socket.on('streamInferenceResult', function(data) {
+            console.log('Received recognition result:', data.plate_info);
+            var recognitionResultDiv = document.getElementById('recognitionResult');
+            recognitionResultDiv.innerHTML = '<p>Recognition Result: ' + data.plate_info + '</p>';
+        });
+
+        socket.on('streamImageResult', function (data) {
+            // console.log('影片:', data);
+
+            // 創建圖像元素
+            const imgElement = document.createElement('img');
+            imgElement.src = 'data:image/png;base64,' + data.streaming_image; // 設置圖像數據
+            imgElement.className = 'w-full';
+
+            // 將圖像添加到頁面中的 videoElement 容器中
+            const videoOutputContainer = document.getElementById('videoElement');
+            videoOutputContainer.innerHTML = ''; // 清空容器內容
+            videoOutputContainer.appendChild(imgElement);
+        });
+    </script>
+</body>
+</html>

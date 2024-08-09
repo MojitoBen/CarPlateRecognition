@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雲寧科技車牌辨識</title>
+    <link href="static/images/logo_sm.png" rel="shortcut icon" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FBFBFB;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            align-items: center;
+            background-image: url('static/images/bg.jpg');
+            background-repeat: no-repeat;
+            background-size: fill;
+
+
+            background-position: center;
+
+        }
+
+        .button {
+            display: inline-block;
+            padding: 20px 40px;
+            font-size: 20px;
+            margin: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background-color: #333;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div>
+            <font size="7">雲寧科技車牌辨識系統</font>
+            <br>
+            <br>
+            <br>
+        </div>
+        <div>
+            <img src="{{ url_for('static', filename='images/car.png') }}" alt="car" />
+            <br>
+        </div>
+        <div>
+            <a href="{{ url_for('main.video') }}" class="button">影片辨識</a>
+            <a href="{{ url_for('main.streaming') }}" class="button">即時串流</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

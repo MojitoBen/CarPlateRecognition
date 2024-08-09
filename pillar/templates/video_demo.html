@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>選擇影片</title>
+<link href="static/images/logo_sm.png" rel="shortcut icon" type="image/x-icon">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+    }
+</style>
+<body>
+
+<div class="w-full h-screen">
+<div class="w-full h-[30%] flex border-b-2 border-black">
+    <!-- 左上區塊 -->
+    <div class="w-[60%] border-r-2 border-black p-4">
+        <!-- 上傳影片的表單 -->
+        <form id="uploadForm" class="w-full flex justify-between" action="{{ url_for('main.demo') }}" method="post" enctype="multipart/form-data">
+            <!-- 影片文件輸入 -->
+            <input type="file" name="upload_video" accept="video/*">
+            <!-- 上傳按鈕 -->
+            <button id="uploadButton" class="bg-sky-500 text-white py-1 px-2 rounded-full font-bold" type="submit">上傳影片</button> 
+        </form>
+        <form id="selectForm" class="w-full flex justify-between" action="{{ url_for('main.demo') }}" method="post" enctype="multipart/form-data">
+            <select name="select_video">
+                {% for video_file in video_files %}
+                    <option value="{{ video_file }}">{{ video_file }}</option>
+                {% endfor %}
+            </select>
+            <button id="selectButton" class="bg-sky-500 text-white py-1 px-2 rounded-full font-bold" type="submit">選擇影片</button> 
+        </form>
+        {% if video_path %}
+        <form id="inferenceForm">
+            <div class="flex">
+                <div class="w-1/2"> 
+                <!-- 模型選擇選項 -->
+                <div>
+                    <label for="plateModelSelect">選擇車牌偵測模型：</label>
+                    <select class=" border-[1px] border-black py-1 px-2 rounded-full" name="plateModel">
+                        <option value="yolov8m_pose_3267">yolov8m_pose</option>
+                        <option value="yolov8m_pose_1502">yolov8m_pose_1502</option>
+                        <option value="yolov8n_plate_plus_640">yolov8n_plate</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="charModelSelect">選擇字元偵測模型：</label>
+                    <select class=" border-[1px] border-black py-1 px-2 rounded-full" name="charModel">
+                        <option value="yolov8n_char_plus">yolov8n_char</option>
+                    </select>
+                </div>
+                <!-- 模型參數設定 -->
+                <div>
+                    <label for="charModelSelect">選擇IOU類型：</label>
+                    <select class=" border-[1px] border-black py-1 px-2 rounded-full"  name="iouType">
+                        <option value="diou">diou</option>
+                        <option value="iou">iou</option>
+                    </select>
+                </div>
+            </div>
+           
+            <div class="w-1/2 flex flex-col">
+                <div>
+                    <label for="matchThresh">match_thresh：</label>
+                    <!-- min 和 max 代表拉動的範圍，step 代表拉動時的間隔，value 代表預設值 -->
+                    <input type="number" id="matchThreshInput" name="matchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 數字輸入框 -->
+                    <input type="range" id="matchThreshRange" name="matchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 拉動條 -->
+                </div>
+                <div>
+                    <label for="secondMatchThresh">second_match_thresh：</label>
+                    <!-- min 和 max 代表拉動的範圍，step 代表拉動時的間隔，value 代表預設值 -->
+                    <input type="number" id="secondMatchThreshInput" name="secondMatchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 數字輸入框 -->
+                    <input type="range" id="secondMatchThreshRange" name="secondMatchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 拉動條 -->
+                </div>
+                <div>
+                    <label for="newMatchThresh">new_match_thresh：</label>
+                    <!-- min 和 max 代表拉動的範圍，step 代表拉動時的間隔，value 代表預設值 -->
+                    <input type="number" id="newMatchThreshInput" name="newMatchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 數字輸入框 -->
+                    <input type="range" id="newMatchThreshRange" name="newMatchThresh" min="0.7" max="1" step="0.01" value="0.95"> <!-- 拉動條 -->
+                </div>
+                    <!-- 開始運行按鈕 -->
+                    <button class="self-end bg-sky-500 text-white py-1 px-2 rounded-full font-bold" type="submit">開始運行</button> 
+                </div>
+            </div>
+        </form>
+        
+        <script>
+            // 同步 matchThresh 的輸入與拉動
+            document.getElementById("matchThreshInput").addEventListener("input", function() {
+                document.getElementById("matchThreshRange").value = this.value;
+            });
+            document.getElementById("matchThreshRange").addEventListener("input", function() {
+                document.getElementById("matchThreshInput").value = this.value;
+            });
+    
+            // 同步 secondMatchThresh 的輸入與拉動
+            document.getElementById("secondMatchThreshInput").addEventListener("input", function() {
+                document.getElementById("secondMatchThreshRange").value = this.value;
+            });
+            document.getElementById("secondMatchThreshRange").addEventListener("input", function() {
+                document.getElementById("secondMatchThreshInput").value = this.value;
+            });
+    
+            // 同步 newMatchThresh 的輸入與拉動
+            document.getElementById("newMatchThreshInput").addEventListener("input", function() {
+                document.getElementById("newMatchThreshRange").value = this.value;
+            });
+            document.getElementById("newMatchThreshRange").addEventListener("input", function() {
+                document.getElementById("newMatchThreshInput").value = this.value;
+            });
+
+            const serverAddress = 'http://218.161.42.52:8080';
+            const socket = io.connect(serverAddress + '/video/demo');
+
+            document.getElementById('inferenceForm').addEventListener('submit', function(e) {
+                e.preventDefault(); // 防止表单默认提交行为
+
+                const formData = new FormData(this);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                socket.emit('startInference', data); // 发送表单数据到服务器端
+
+            });
+
+            document.getElementById("stopDetect").addEventListener("click", async function () {
+            socket.emit("stopStreaming");
+            });
+
+
+        </script>
+        
+        {% endif %}
+
+        <div>
+            <br><br>
+            <button class="self-end bg-sky-500 text-white py-1 px-2 rounded-full font-bold return-button">返回首頁</button>
+        </div>
+        <script>
+
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                
+                const fileInput = document.querySelector('input[type="file"]');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    e.preventDefault(); // 防止表单默认提交行为
+                    alert("請選擇一個影片文件！");
+                    return; 
+                }
+
+            });
+
+            document.getElementById('selectForm').addEventListener('submit', function(e) {
+                
+                const selectFilename = document.querySelector('select[name="select_video"]');
+
+                if (!selectFilename) {
+                    e.preventDefault(); // 防止表单默认提交行为
+                    alert("請選擇一個影片文件！");
+                    return; 
+                }
+
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+            const returnButton = document.querySelector('.return-button');
+
+            returnButton.addEventListener('click', function () {
+                window.location.href = "{{ url_for('main.index') }}"; // 這裡替換成你的 index 頁面的路徑
+                });
+            });
+        </script>
+    </div>
+
+    <!-- 右上區塊 -->
+    <div id='videoDownload' class="w-[40%] text-lg font-bold p-4 overflow-y-auto">
+        {% if video_path %}
+        <h3>影片上傳成功</h3>
+        <p>原始影片：<a href="{{ url_for('static', filename=video_path) }}" target="_blank">{{ video_filename }}</a></p>
+        <h3 id="detectTitle" style="display: none;">影片偵測完成</h3>
+        <p id="detectVideo"></p>
+        {% endif %}
+    </div>
+
+    <script>
+
+        // 監聽來自伺服器端發送的影片資料
+        socket.on('videoResult', function(data) {
+            // console.log('影片:', data);
+
+            const detectTitle = document.getElementById('detectTitle');
+            detectTitle.style.display = 'block';
+            document.getElementById('detectVideo').innerHTML = `偵測影片：<a href="${data.output_path}" target="_blank">${data.output_filename}</a>`;
+
+        });
+
+    </script>
+
+</div>
+<div class="w-full h-[70%]  flex">
+    <!-- 左下區塊 -->
+    <div id="videoOutput" class="w-[60%] h-full border-r-2 border-black ">
+
+        <!-- {% if video_path and output_path %} -->
+        <video controls class="w-full h-full px-4">
+            <source src="videoSrc" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+
+        <!-- {% endif %} -->
+    </div>
+
+    <script>
+        // 監聽從伺服器端發送的圖像數據
+        socket.on('imageResult', function(data) {
+            // console.log('image：', data);
+
+            const imageSrc = 'data:image/png;base64,'+ data.image;
+
+            // 將圖像添加到頁面中的 videoOutput 容器中
+            const videoOutputContainer = document.getElementById('videoOutput');
+            videoOutputContainer.innerHTML = `<div class="w-full h-full flex justify-center"><img src=${imageSrc} class="object-contain max-w-full max-h-full px-4"/></div>`;
+        });
+
+        // 監聽來自伺服器端發送的影片資料
+        socket.on('videoResult', function(data) {
+            // console.log('影片:', data);
+
+            let videoMsg = `
+                    <video controls class="w-full h-full px-4">
+                        <source src="${data.output_path}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                `
+
+            // 將影片添加到頁面上的 videoOutput 容器中
+            const videoOutputContainer = document.getElementById('videoOutput');
+            videoOutputContainer.innerHTML = videoMsg;
+        });
+    </script>
+
+    <!-- 右下區塊 -->
+    <div id="outputContent" class="w-[40%] overflow-y-auto p-4">
+        <div id="output">
+            <div class=" flex items-center">
+                <button id="downloadButton" class="bg-blue-500 h-10 text-white py-2 px-4 mx-4 rounded-full" style="display: none;">下載辨識結果</button>
+                <button id="sendSelected" class="bg-blue-500 h-10 text-white py-2 px-4 mx-4 rounded-full my-4" style="display: none;">傳回偵測錯誤資料</button>
+            </div>
+            <h1 id="detectVideoPath" style="display: none;">檢測的影片路徑：</h1>
+        </div>
+        <div id="outputTable"></div>
+
+            <script>
+                socket.on('inference', function(data) {
+                    // console.log('推理事件：', data);
+                    // 在這裡處理推理完成事件的資料
+                    const downloadButton = document.getElementById('downloadButton');
+                    downloadButton.style.display = 'block';
+                    const detectVideoPath = document.getElementById('detectVideoPath');
+                    detectVideoPath.style.display = 'block';
+                    const sendSelected = document.getElementById('sendSelected');
+                    sendSelected.style.display = 'block';
+                    const videoPath = data.video_path;
+                    document.getElementById('detectVideoPath').innerHTML = `檢測的影片路徑：${videoPath}`;
+                })
+
+                socket.on('inferenceResult', function(data) {
+                    // console.log('推理事件完成：', data);
+                    const plateInfo = data.plate_info;
+                    const outputTable = document.getElementById('outputTable');
+                    outputTable.innerHTML = `
+                        <h3 class="text-lg text-center font-bold">總共 ${Object.keys(plateInfo).length} 輛車</h3>
+                        <table class="w-full text-lg text-center">
+                            <tr>
+                                <th>ID</th>
+                                <th>TIME</th>
+                                <th>Image</th>
+                                <th>Number</th>
+                                <th>Selected</th>
+                            </tr>
+                            ${Object.entries(plateInfo).map(([key, value]) => `
+                                <tr>
+                                    <td class="w-20">${key}</td>
+                                    <td class="w-20">${value[2]}</td>
+                                    <td class=""><img class="w-full h-28" src="data:image/png;base64,${value[1]}" alt="image"></td>
+                                    <td>${value[0]}</td>
+                                    <td><input type="checkbox" name="selectedPlate" value="${value[0]}" data-image="${value[1]}"></td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    `;
+                })
+
+                // 傳回偵測錯誤的點擊事件
+                document.getElementById('sendSelected').addEventListener('click', function() {
+                    const selectedPlates = []; // 存放選中的資料
+                    const checkboxes = document.querySelectorAll('input[name="selectedPlate"]:checked'); // 獲取所有選中的複選框
+                    checkboxes.forEach(checkbox => {
+                        selectedPlates.push({
+                            predict: checkbox.value,
+                            image: checkbox.dataset.image // 從data-image屬性中獲取圖片的base64編碼
+                        });
+                    });
+                    // 使用Socket.IO將選中的資料發送到伺服器端
+                    socket.emit('selectedData', { selectedPlates: selectedPlates });
+
+                    alert('上傳完成');
+                });
+
+                // 下載按鈕的點擊事件
+                document.getElementById("downloadButton").addEventListener("click", async function () {
+                    // console.log('點擊下載：');
+                    // 抓取指定的 div，產生 base64 格式圖片
+                    const el = document.getElementById('outputTable');
+
+                    // 設置背景顏色為白色
+                    el.style.backgroundColor = 'white';
+                    const config = {
+                        quality: 1,
+                    };
+
+                    const dataUri = await domtoimage.toPng(el, config).then(dataUrl => dataUrl);
+
+                    // 還原背景顏色（可選）
+                    el.style.backgroundColor = '';
+
+                    // 下載圖片
+                    const link = document.createElement('a');
+                    const filename = 'Demo.png';
+                    link.download = filename;
+                    link.href = dataUri;
+                    link.click();
+                });
+
+            </script>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
