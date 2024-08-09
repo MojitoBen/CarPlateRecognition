@@ -129,108 +129,122 @@
 
 
 ----------------------------------------------------------------------------------------------
-###安裝torch&torchvision的另一種方式
+下面是一個 `README.md` 文件的範例，包含了安裝 `ByteTrack`、依賴庫、Flask、TensorRT 和 YOLOv8 的步驟：
 
-下載 torch
-sudo apt install -y libfreetype6-dev
-sudo apt install python3-pip libopenblas-base libopenmpi-dev libomp-dev
+```markdown
+# ByteTrack 安裝指南
 
-https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html#overview__section_z4r_vjd_v2b
-export TORCH_INSTALL=https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+此文檔提供了安裝 ByteTrack、所需的依賴庫、Flask 及 TensorRT 的步驟，並介紹了如何將 PyTorch 模型轉換為 TensorRT 格式。
 
-pip3 install --no-cache $TORCH_INSTALL
+## 系統要求
 
-sudo apt-get install libjpeg-dev zliblg-dev libpython3-dev libavcodec-dev libavformat-dev
+- Ubuntu 20.04 或更高版本
+- Python 3.8 或更高版本
 
-下載 torchvision
-cd ..
-sudo git clone --branch v0.13.0 https://github.com/pytorch/vision torchvision
-cd torchvision
-export BUILD_VERSION=0.13.0
-export CUDA_HOME=/usr/local/cuda
-python3 setup.py install --user
+## 安裝步驟
 
-檢查 torch 與 torchvision
->>> import torch
->>> print(torch.__version__)
+### 1. 克隆 ByteTrack 源碼
 
->>> print('CUDA available: ' + str(torch.cuda.is_available()))
-
->>> print('cuDNN version: ' + str(torch.backends.cudnn.version()))
-
->>> a = torch.cuda.FloatTensor(2).zero_()
-
->>> print('Tensor a = ' + str(a))
->>> b = torch.randn(2).cuda()
-
->>> print('Tensor b = ' + str(b))
-
->>> c = a + b
->>> print('Tensor c = ' + str(c))
-
->>> import torchvision
-
->>> print(torchvision.__version__)
-![image](https://github.com/user-attachments/assets/ff35cc84-72bd-4723-ab45-39058d64efe3)
-
-----------------------------------------------------------------------------------------------
-
-下載 ByteTrack
-cd ..
+```bash
 git clone https://github.com/ifzhang/ByteTrack.git
-
 cd ByteTrack
+```
 
+### 2. 安裝 HDF5 庫
+
+```bash
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev
+```
 
-將 requirements.txt  中 torch>=1.7 torchvision>=0.10.0 註解掉
+### 3. 修改 `requirements.txt`
+
+打開 `requirements.txt` 文件，註解掉以下兩行：
+
+```text
+torch>=1.7
+torchvision>=0.10.0
+```
+
+### 4. 安裝 Python 依賴
+
+```bash
 pip3 install cmake==3.22
 pip3 install -r requirements.txt
-
-python3 setup.py develop
-pip3 install cython; pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+pip3 install cython
+pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 pip3 install cython_bbox
 pip3 install numpy==1.23.4
+```
 
-下載 Flask
+### 5. 設置 ByteTrack
+
+```bash
+python3 setup.py develop
+```
+
+### 6. 安裝 Flask 及相關依賴
+
+```bash
 pip3 install flask
 pip3 install flask_socketio
 pip install av
+```
 
-Export pytorch to tensorRT
-下載 Onnx
+### 7. 下載 ONNX 和 ONNX Runtime
+
+```bash
 pip3 install onnx==1.12.0
 pip3 install onnxsim==0.4.33
+```
 
-下載 onnxruntime 1.15.1 https://elinux.org/Jetson_Zoo#ONNX_Runtime
-pip3 install ../Downloads/onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl 
-pip3 install numpy==1.23.4
+從 [Jetson Zoo](https://elinux.org/Jetson_Zoo#ONNX_Runtime) 下載 `onnxruntime_gpu-1.15.1`，然後安裝：
 
-下載 TensorRT
+```bash
+pip3 install ../Downloads/onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl
+```
+
+### 8. 安裝 TensorRT
+
+```bash
 sudo apt-get install tensorrt nvidia-tensorrt-dev python3-libnvinfer-dev
-# 將 tensorRT 複製到虛擬環境中
-cp -r /usr/lib/python3.8/dist-packages/tensorrt* miniconda3/envs/yolov8/lib/python3.8/site-packages
+```
 
-python3 pt2trt.py 
+將 TensorRT 複製到虛擬環境中：
+
+```bash
+cp -r /usr/lib/python3.8/dist-packages/tensorrt* miniconda3/envs/yolov8/lib/python3.8/site-packages
+```
+
+### 9. 將 PyTorch 模型轉換為 TensorRT
+
+確保已經安裝了 `ultralytics` 庫，然後使用以下腳本將模型導出為 TensorRT 格式：
+
+```python
 from ultralytics import YOLO
 
-# Load the YOLOv8 model
+# 載入 YOLOv8 模型
 model = YOLO('yolov8n.pt')
 
-# Export the model to TensorRT format
-# model.export(format='onnx')  # creates 'yolov8n.engine'
+# 將模型導出為 TensorRT 格式
+model.export(
+    format='engine',    # 導出格式
+    imgsz=640,          # 圖像尺寸 (高, 寬) 或標量
+    keras=False,        # 是否使用 Keras 導出 TF SavedModel
+    optimize=False,     # 是否優化 TorchScript 模型
+    half=False,         # 是否使用 FP16 量化
+    int8=False,         # 是否使用 INT8 量化
+    dynamic=True,       # 是否使用動態軸
+    simplify=True,      # 是否簡化模型
+    opset=12,           # ONNX: opset 版本
+    workspace=4,        # TensorRT: 工作區域大小 (GB)
+    nms=False,          # CoreML: 是否添加 NMS
+)
+```
 
-model.export(format='engine', # format to export to
-               imgsz = 640, # image size as scalar or (h, w) list, i.e. (640, 480)
-               keras = False, # use Keras for TF SavedModel export
-               optimize = False, # TorchScript: optimize for mobile
-               half = False, # FP16 quantization
-               int8 = False, # INT8 quantization
-               dynamic = True, # ONNX/TensorRT: dynamic axes
-               simplify = True, # ONNX/TensorRT: simplify model
-               opset = 12, # ONNX: opset version (optional, defaults to latest)
-               workspace = 4, # TensorRT: workspace size (GB)
-               nms = False, # CoreML: add NMS
-               # batch = 10
-               )
-![image](https://github.com/user-attachments/assets/c54a0b2c-266c-47de-a359-94e00642d390)
+## 注意事項
+
+- 請確保所有步驟都已正確完成，以避免依賴庫衝突或安裝問題。
+- 根據您的系統和需求調整 TensorRT 安裝和模型導出設置。
+
+```
+
