@@ -129,9 +129,7 @@
 
 
 ----------------------------------------------------------------------------------------------
-下面是一個 `README.md` 文件的範例，包含了安裝 `ByteTrack`、依賴庫、Flask、TensorRT 和 YOLOv8 的步驟：
 
-```markdown
 # ByteTrack 安裝指南
 
 此文檔提供了安裝 ByteTrack、所需的依賴庫、Flask 及 TensorRT 的步驟，並介紹了如何將 PyTorch 模型轉換為 TensorRT 格式。
