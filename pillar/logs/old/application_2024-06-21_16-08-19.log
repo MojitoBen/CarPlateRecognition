@@ -1,0 +1,51 @@
+2024-06-21 16:08:19,681 INFO: MySQL connected.
+2024-06-21 16:08:19,682 INFO: MySQL connected.
+2024-06-21 16:11:22,756 INFO: New plate: TDC-5728
+2024-06-21 16:12:22,779 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:12:23,856 INFO: New plate: 670-CZE
+2024-06-21 16:12:35,121 INFO: New plate: MNZ-8675
+2024-06-21 16:12:56,305 INFO: New plate: BNL-7379
+2024-06-21 16:13:22,787 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:13:23,886 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:13:35,150 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:13:56,350 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:14:22,796 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:14:23,900 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:14:35,151 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:14:56,362 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:15:22,868 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:15:23,955 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:15:35,172 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:15:56,391 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:16:22,907 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:16:23,968 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:16:35,173 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:16:56,408 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:17:22,927 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:17:23,972 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:17:35,183 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:17:56,413 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:18:22,946 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:18:23,996 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:18:35,197 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:18:56,435 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:19:22,956 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:19:24,022 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:19:35,206 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:19:56,497 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:19:56,893 INFO: New plate: EN-3166
+2024-06-21 16:20:22,958 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:20:24,058 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:20:35,219 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:20:56,516 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:20:56,909 INFO: Plate reappeared after interval: EN-3166
+2024-06-21 16:21:22,982 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:21:24,073 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:21:35,240 INFO: Plate reappeared after interval: MNZ-8675
+2024-06-21 16:21:56,542 INFO: Plate reappeared after interval: BNL-7379
+2024-06-21 16:21:56,911 INFO: Plate reappeared after interval: EN-3166
+2024-06-21 16:21:59,747 INFO: New plate: NRL-6096
+2024-06-21 16:22:00,958 INFO: New plate: BAM-6882
+2024-06-21 16:22:22,986 INFO: Plate reappeared after interval: TDC-5728
+2024-06-21 16:22:24,092 INFO: Plate reappeared after interval: 670-CZE
+2024-06-21 16:22:35,241 INFO: Plate reappeared after interval: MNZ-8675
