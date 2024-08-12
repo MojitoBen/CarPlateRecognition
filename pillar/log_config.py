@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 def get_location():
-    return '憲政路辦公室'
+    return 'LOCATION HERE'
 
 def setup_logging(enable_logging=True):
     if enable_logging:
