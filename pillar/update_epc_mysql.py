@@ -6,20 +6,20 @@ created_time = datetime.now()
 
 def setup_database():
     conn = mysql.connector.connect(
-        host='35.187.153.63',
+        host='host',
         port='3306',
-        user='yunning',
-        password='!Yunning90430522',
-        database='yunning_pillar'
+        user='user',
+        password='your_password',
+        database='your_database'
     )
     cursor = conn.cursor()
     conn.commit()
     return conn, cursor
-
+'''
 def insert_plate_num(cursor, plate, location):
     global created_time
     try:
-        url = "http://35.187.153.63/insert_plate/"
+        url = "http://~~~~~~~~~~~~~~~~~~~~~/insert_plate/"
         data = {
             "plate": f"{plate}",
             "location": f"{location}",
@@ -39,7 +39,7 @@ def insert_plate_num(cursor, plate, location):
 def insert_epc(cursor, epc, tid, location):
     global created_time
     try:
-        url = "http://35.187.153.63/insert_epc/"
+        url = "http://~~~~~~~~~~~~~~~~~~~~~/insert_epc/"
         data = {
             "code_number": f"{epc}",
             "TID": f"{tid}",
@@ -60,7 +60,7 @@ def insert_epc(cursor, epc, tid, location):
 def update_epc_last_seen_time(cursor, epc, tid, location, current_time): 
     global created_time
     try:
-        url = "http://35.187.153.63/update_epc/"
+        url = "http://~~~~~~~~~~~~~~~~~~~~~/update_epc/"
         data = {
             "last_time": f"{current_time}",
             "code_number": f"{epc}",
@@ -80,7 +80,7 @@ def update_epc_last_seen_time(cursor, epc, tid, location, current_time):
 def update_plate_last_seen_time(cursor, plate, location, current_time):
     global created_time
     try:
-        url = "http://35.187.153.63/update_plate/"
+        url = "http://~~~~~~~~~~~~~~~~~~~~~/update_plate/"
         data = {
             "last_time": f"{current_time}",
             "plate": f"{plate}",
@@ -95,7 +95,7 @@ def update_plate_last_seen_time(cursor, plate, location, current_time):
         print(response.json())
     except requests.exceptions.RequestException as err:
         print("UPDATE Plate Number Last Time Failed:", err)
-
+'''
 '''
 @router.post("/insert_plate/")
 def create_plate_record_endpoint(record: PlateRecord):
@@ -114,7 +114,7 @@ def update_plate_endpoint(record: PlateRecord):
     return update_plate(record)
 '''
 
-'''
+
 #直接注入資料庫
 def insert_plate_num(cursor, plate, location):
     try:
@@ -144,7 +144,7 @@ def update_epc_last_seen_time(cursor, epc, tid, location, current_time):
 
 def update_plate_last_seen_time(cursor, plate, location, current_time):
     cursor.execute('UPDATE license_records SET last_time = %s WHERE plate = %s AND location = %s', (current_time, plate, location))
-'''
+
 if __name__ == '__main__':
     #conn, cursor = setup_database()
     #print("conn", conn)
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     created_time = datetime.now()
     epc = "ee0002220330000000028411"
     tid = "e2806894200050232a05813c"
-    location = "分局辦公室"
+    location = "AAAA"
     current_time = created_time
 
     update_epc_last_seen_time(None, epc, tid, location, current_time)
