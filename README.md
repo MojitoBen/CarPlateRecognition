@@ -130,40 +130,41 @@
 
 ----------------------------------------------------------------------------------------------
 
-# ByteTrack 安裝指南
+# ByteTrack 安裝建議
 
-此文檔提供了安裝 ByteTrack、所需的依賴庫、Flask 及 TensorRT 的步驟，並介紹了如何將 PyTorch 模型轉換為 TensorRT 格式。
+依各系統和配置可能會有不同的安裝方式。
 
 ## 系統要求
 
+Linux
 - Ubuntu 20.04 或更高版本
 - Python 3.8 或更高版本
 
 ## 安裝步驟
 
-### 1. 克隆 ByteTrack 源碼
+### 1. ByteTrack 
 
 ```bash
 git clone https://github.com/ifzhang/ByteTrack.git
 cd ByteTrack
 ```
 
-### 2. 安裝 HDF5 庫
+### 2. 安裝 HDF5
 
 ```bash
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev
 ```
 
-### 3. 修改 `requirements.txt`
+### 3. 修改 requirements.txt
 
-打開 `requirements.txt` 文件，註解掉以下兩行：
+打開 requirements.txt 文件，註解掉以下兩行：
 
 ```text
 torch>=1.7
 torchvision>=0.10.0
 ```
 
-### 4. 安裝 Python 依賴
+### 4. 安裝 Python
 
 ```bash
 pip3 install cmake==3.22
