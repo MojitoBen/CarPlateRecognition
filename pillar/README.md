@@ -11,13 +11,11 @@ The Smart Pillar combines license plate recognition with RFID receiver technolog
 ## Result
 
 #### Detect 
-<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/2024-07-10_17.30.29_test.png" width="350">
-<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/2024-07-10_17.32.29_test.png" width="350">
+<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/2024-07-10_17.30.29_test.png" width="350"><img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/2024-07-10_17.32.29_test.png" width="350">
 
 #### Etags & Database Records
 
-<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_carplate_records.png" width="350">
-<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_rfid_records.png" width="350">
+<img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_carplate_records.png" width="350"><img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_rfid_records.png" width="350">
 <img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_duplicate_bindings.png" width="350">
 <img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_duplicate_groups.png" width="350">
 <img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/db_binding.png" width="350">
