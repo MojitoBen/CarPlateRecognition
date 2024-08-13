@@ -17,7 +17,7 @@ def setup_database():
     return conn, cursor
 '''
 def insert_plate_num(cursor, plate, location):
-    global created_time
+    created_time = datetime.now()
     try:
         url = "http://~~~~~~~~~~~~~~~~~~~~~/insert_plate/"
         data = {
@@ -37,7 +37,7 @@ def insert_plate_num(cursor, plate, location):
         print("Insert Plate Number Failed:", err)
 
 def insert_epc(cursor, epc, tid, location):
-    global created_time
+    created_time = datetime.now()
     try:
         url = "http://~~~~~~~~~~~~~~~~~~~~~/insert_epc/"
         data = {
@@ -58,7 +58,6 @@ def insert_epc(cursor, epc, tid, location):
         print("Insert Etag Number Failed:", err)
 
 def update_epc_last_seen_time(cursor, epc, tid, location, current_time): 
-    global created_time
     try:
         url = "http://~~~~~~~~~~~~~~~~~~~~~/update_epc/"
         data = {
@@ -78,7 +77,6 @@ def update_epc_last_seen_time(cursor, epc, tid, location, current_time):
         print("UPDATE Etag Number Last Time Failed:", err)
 
 def update_plate_last_seen_time(cursor, plate, location, current_time):
-    global created_time
     try:
         url = "http://~~~~~~~~~~~~~~~~~~~~~/update_plate/"
         data = {
