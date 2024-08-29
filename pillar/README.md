@@ -8,6 +8,20 @@ The Smart Pillar combines license plate recognition with RFID receiver technolog
 
 <img src="https://github.com/MojitoBen/CarPlateRecognition/blob/main/pillar/images/flow4.png" width="500">
 
+- **Systems Used**:
+  - License Plate Recognition System
+  - RFID Detection System
+
+- **Data Obtained**:
+  - License plate numbers
+  - eTag data
+
+- **Data Storage**:
+  - All information is stored in a database.
+
+- A unique correspondence is established between each license plate and its corresponding eTag data.
+- This process effectively registers the vehicle's identity.
+    
 ## Result
 
 #### Detect 
