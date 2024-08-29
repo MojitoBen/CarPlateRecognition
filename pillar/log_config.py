@@ -2,9 +2,15 @@
 import logging
 import os
 from datetime import datetime
+import socket
+
+location_dict = { '192.168.50.207': '憲政路辦公室', 
+                  '127.0.0.1':'ben_mac_test',
+                 'ip': 'xxx' } 
 
 def get_location():
-    return 'LOCATION HERE'
+    ip_address = socket.gethostbyname(socket.gethostname())
+    return location_dict.get(ip_address, ip_address)
 
 def setup_logging(enable_logging=True):
     if enable_logging:
@@ -21,4 +27,6 @@ def setup_logging(enable_logging=True):
     else:
         logging.basicConfig(level=logging.CRITICAL)  # Effectively disable logging
 
-
+if __name__ == '__main__': 
+    location_t = get_location()
+    print('地點:', location_t)

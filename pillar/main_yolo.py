@@ -81,17 +81,33 @@ def start_receiving_epc(conn, cursor, ip_address="192.168.0.169", port=8160):
         conn.close()
 
 def start_detecting_plate(conn, cursor):
+    conn, cursor = connect_to_database()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     args = LPRSystem.make_parser().parse_args()
     lpr_system = LPRSystem(args, device, plate_confidence_threshold=0.5, char_confidence_threshold=0.5)
-    plate_info = lpr_system.detect_plate_in_video(conn, cursor, save=False, save_org=True) #save_org=True 存原影片
+    plate_info = lpr_system.detect_plate_in_video(conn, cursor, save=False, save_org=False) #save_org=True 存原影片
     logging.info("Plate detection completed.")
+
 '''
 def start_detecting(conn, cursor):
     ids_stream_paths, usb_stream_paths, csi_stream_paths = parse_args()
     detect_plate(ids_stream_paths, usb_stream_paths, csi_stream_paths)
     logging.info("Plate detection completed.")
 '''
+
+def start_detecting_rtsp():
+    conn, cursor = setup_database()
+    if conn and cursor:
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        args = LPRSystem.make_parser().parse_args()
+        lpr_system = LPRSystem(args, device, plate_confidence_threshold=0.5, char_confidence_threshold=0.5)
+
+        conn, cursor = connect_to_database()
+        plate_info = lpr_system.detect_plate_in_video(conn=conn, cursor=cursor, save=False)
+        logging.info("Rtsp detection completed.")
+    else:
+        logging.error("Failed to start rtsp detecting thread due to database connection issue.")
+
 def connect_to_database():
     conn, cursor = setup_database()
     if conn and cursor:
@@ -117,13 +133,32 @@ def start_detecting_plate_thread():
     else:
         logging.error("Failed to start plate detecting thread due to database connection issue.")
 
+def start_detecting_rtsp_thread():
+    conn, cursor = connect_to_database()
+    if conn and cursor:
+        start_detecting_rtsp(conn, cursor)
+        #start_detecting(conn, cursor)        
+    else:
+        logging.error("Failed to start plate detecting thread due to database connection issue.")
+
 
 if __name__ == '__main__':
+
+
     epc_thread = threading.Thread(target=start_receiving_epc_thread)
-    plate_thread = threading.Thread(target=start_detecting_plate_thread)
-
     epc_thread.start()
-    plate_thread.start()
-
+    #start_detecting_rtsp()
     epc_thread.join()
-    plate_thread.join()
+
+
+    #epc_thread = threading.Thread(target=start_receiving_epc_thread)
+    #plate_thread = threading.Thread(target=start_detecting_plate_thread)
+    #rtsp_thread = threading.Thread(target=start_detecting_rtsp_thread)
+
+    #epc_thread.start()
+    #plate_thread.start()
+    #rtsp_thread.start()
+
+    #epc_thread.join()
+    #plate_thread.join()
+    #rtsp_thread.join()
